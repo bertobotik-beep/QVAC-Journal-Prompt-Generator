@@ -71,6 +71,10 @@ export async function generate(modelId, moodOrTopic) {
 
   if (text && !/[?？]\s*$/.test(text)) text = text.replace(/[.!]+$/, "") + "?";
 
+  // Reject the model's output and use the deterministic fallback whenever it
+  // refused, rambled, or drifted off-topic (no keyword overlap with the
+  // user's input) — this guarantees the user always gets a usable, relevant
+  // prompt even if the on-device model produces a bad completion.
   const prompt = looksUnusable(text) || !isGrounded(text, moodOrTopic) ? FALLBACK(moodOrTopic) : text;
   return { prompt };
 }
